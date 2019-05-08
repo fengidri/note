@@ -189,7 +189,7 @@ function gettree(ajax, url)
 
 function loadmd()
 {
-    if (!vue.selected) return;
+    if (!vue.selected.url) return;
 
     vue.$.get(vue.selected.url, function(data, status, xhr){
         if (data == vue.origin) return;
@@ -207,6 +207,8 @@ function loadmd()
         var d = {store:{}, content:'', selected:{}}
 
         d.store.top = gettree(this.$.ajax, 'http://wiki.me/store/')
+
+        d.selected = vue.selected;
 
         d.defaultProps =  {
             children: 'children',
