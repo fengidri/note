@@ -1,5 +1,8 @@
 
 <style>
+body{
+  margin: 0;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -7,6 +10,15 @@
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#header{
+    text-align: center;
+    border-bottom: 2px solid;
+}
+#header div{
+    font-size: 8pt;
+    text-align: right;
+    margin-top: -15pt;
 }
 #content{
   margin: auto;
@@ -93,7 +105,7 @@ img{
 <el-container style="height: 100vh; margin: 0;padding: 0;">
 
   <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-    <h2>store</h2>
+    <h4>store</h4>
 
 
 <el-tree :data="store.top" :props="defaultProps" @node-click="handleNodeClick"
@@ -106,8 +118,9 @@ img{
   </el-aside>
 
   <el-container>
-    <el-header style="text-align: center; font-size: 22px; padding: 20px">
-        {{title}}
+    <el-header id=header>
+        <h3>{{selected.label}}</h3>
+        <div>{{selected.mtime}}/{{selected.size}}</div>
     </el-header>
 
     <el-main >
@@ -123,7 +136,20 @@ img{
 
 <script>
 import marked from 'marked'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css'
+
 var vue;
+
+
+const highlightCode = () => {
+  const preEl = document.querySelectorAll('pre')
+
+  preEl.forEach((el) => {
+    hljs.highlightBlock(el)
+  })
+}
+
 function gettree(ajax, url)
 {
     var d
@@ -165,10 +191,10 @@ function loadmd()
 {
     if (!vue.selected) return;
 
-    vue.title = vue.selected.label;
-
-
     vue.$.get(vue.selected.url, function(data, status, xhr){
+        if (data == vue.origin) return;
+
+        vue.origin = data;
         vue.content = marked(data)
     })
 }
@@ -178,7 +204,7 @@ function loadmd()
       name: 'app',
     data: function(){
         vue = this;
-        var d = {store:{}, content:'', title:''}
+        var d = {store:{}, content:'', selected:{}}
 
         d.store.top = gettree(this.$.ajax, 'http://wiki.me/store/')
 
@@ -193,6 +219,13 @@ function loadmd()
       created: function()
       {
           loadmd();
+      },
+      mounted: function() {
+          highlightCode();
+      },
+      updated: function()
+      {
+          highlightCode();
       },
       methods: {
           handleNodeClick(data)
