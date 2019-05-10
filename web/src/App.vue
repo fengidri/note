@@ -95,8 +95,9 @@ body{
     counter(counter_subsubsection)'. ';
 }
 img{
-    width: 80%;
+    width: 90%;
     text-align: center;
+    border: 1px solid;
 }
 </style>
 
@@ -208,7 +209,8 @@ function loadmd()
 
         d.store.top = gettree(this.$.ajax, 'http://wiki.me/store/')
 
-        d.selected = vue.selected;
+        if (vue.selected)
+            d.selected = vue.selected;
 
         d.defaultProps =  {
             children: 'children',
