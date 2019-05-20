@@ -126,7 +126,10 @@ img{
 
     <el-main >
         <div>
-        <div v-html=content id=content ></div>
+        <div @click=content_click v-html=content id=content ></div>
+        <el-dialog class=focus width=80% title="" :visible.sync="img.show"  :show-close=false style=''>
+            <img  :src=img.src></img>
+        </el-dialog>
         </div>
     </el-main>
   </el-container>
@@ -205,7 +208,7 @@ function loadmd()
       name: 'app',
     data: function(){
         vue = this;
-        var d = {store:{}, content:'', selected:{}}
+        var d = {store:{}, content:'', selected:{}, img:{show: false, src: null}}
 
         d.store.top = gettree(this.$.ajax, 'http://wiki.me/store/')
 
@@ -237,7 +240,17 @@ function loadmd()
               vue.selected = data;
               localStorage.setItem("expend", data.url);
               loadmd();
-          }
+          },
+          content_click(e)
+          {
+              if (e.target.nodeName.toLowerCase() === 'img') {
+                  this.img.show = true;
+                  this.img.src = e.target.src
+                  return
+              }
+              this.$emit('click', this.m)
+
+          },
       }
   }
 </script>
