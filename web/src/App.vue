@@ -94,6 +94,13 @@ body{
     counter(counter_subsection)'.'
     counter(counter_subsubsection)'. ';
 }
+
+#foot{
+    height: 30em;
+    border-top: 1px solid;
+    margin-top: 5em;
+}
+
 img{
     width: 90%;
     text-align: center;
@@ -131,6 +138,7 @@ img{
             <img  :src=img.src></img>
         </el-dialog>
         </div>
+        <div id=foot></div>
     </el-main>
   </el-container>
 </el-container>
