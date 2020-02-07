@@ -128,7 +128,7 @@ img{
   <el-container>
     <el-header id=header>
         <h3>{{selected.label}}</h3>
-        <div>{{selected.mtime}}/{{selected.size}}</div>
+        <div>{{selected.file_name}}: {{selected.mtime}}/{{selected.size}}</div>
     </el-header>
 
     <el-main >
@@ -162,6 +162,18 @@ const highlightCode = () => {
   })
 }
 
+
+function get_title(app)
+{
+    var title = app.$("#content").find("h1").first().text()
+
+    if (title)
+    {
+        localStorage.setItem("title:" + app.selected.url, title);
+        app.selected.label = title;
+    }
+}
+
 function gettree(ajax, url)
 {
     var d
@@ -178,7 +190,15 @@ function gettree(ajax, url)
             {
                 item = data[i];
                 item.label = item.name.split('.')[0];
+                item.file_name = item.name.split('.')[0];
                 item.url = url + '/' + item.name
+
+                var label =  localStorage.getItem("title:" + item.url);
+                if (label)
+                {
+                    item.label = label
+                }
+
                 if ('directory' == item.type)
                 {
                     item.children = gettree(ajax, url + '/' + item.name)
@@ -212,8 +232,8 @@ function loadmd()
 }
 
 
-  export default {
-      name: 'app',
+export default {
+    name: 'app',
     data: function(){
         vue = this;
         var d = {store:{}, content:'', selected:{}, img:{show: false, src: null}}
@@ -225,40 +245,41 @@ function loadmd()
 
         d.defaultProps =  {
             children: 'children',
-                label: 'label'
+            label: 'label'
         }
 
         setInterval(loadmd, 500, this);
         return d;
     },
-      created: function()
-      {
-          loadmd();
-      },
-      mounted: function() {
-          highlightCode();
-      },
-      updated: function()
-      {
-          highlightCode();
-      },
-      methods: {
-          handleNodeClick(data)
-          {
-              vue.selected = data;
-              localStorage.setItem("expend", data.url);
-              loadmd();
-          },
-          content_click(e)
-          {
-              if (e.target.nodeName.toLowerCase() === 'img') {
-                  this.img.show = true;
-                  this.img.src = e.target.src
-                  return
-              }
-              this.$emit('click', this.m)
+    created: function()
+    {
+        loadmd();
+    },
+    watch:{
+        content: function(val){
+            this.$nextTick(()=>{
+                highlightCode();
+                get_title(this);
+            })
+        }
+    },
+    methods: {
+        handleNodeClick(data)
+        {
+            vue.selected = data;
+            localStorage.setItem("expend", data.url);
+            loadmd();
+        },
+        content_click(e)
+        {
+            if (e.target.nodeName.toLowerCase() === 'img') {
+                this.img.show = true;
+                this.img.src = e.target.src
+                return
+            }
+            this.$emit('click', this.m)
 
-          },
-      }
-  }
+        },
+    }
+}
 </script>
